@@ -12,7 +12,7 @@
 
 本次`make qemu`
 
-![](pic\1.png)
+![](pic/1.png)
 
 ```cmd
 root@dzq-VMware-Virtual-Platform:/home/dzq/opt/riscv/labcode/lab2# make qemu
@@ -98,7 +98,7 @@ QEMU: Terminated
 
 ​	`dzq/opt/riscv/labcode/lab2/kern/mm/best_fit_pmm.c`
 
-![](pic\2.png)
+![](pic/2.png)
 
 ## 练习
 
@@ -217,3 +217,4 @@ slub算法，实现两层架构的高效内存单元分配，第一层是基于�
 ### 扩展练习Challenge：硬件的可用物理内存范围的获取方法（思考题）
 
 - 如果 OS 无法提前知道当前硬件的可用物理内存范围，请问你有何办法让 OS 获取可用物理内存范围？
+
