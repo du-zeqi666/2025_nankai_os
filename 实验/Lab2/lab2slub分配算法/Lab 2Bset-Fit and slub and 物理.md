@@ -68,9 +68,9 @@ pmm_manager = &best_fit_pmm_manager;
 
 这使得系统初始化时自动加载 Best-Fit 分配器。
 
-如同，make grade后成功通过测试：
+如图，make grade后成功通过测试：
 
-![image-20251015222843610](C:\Users\xiexi\AppData\Roaming\Typora\typora-user-images\image-20251015222843610.png)
+![best_fit_pmm test](image-1.png)
 
 ### 进一步的改进空间
 
@@ -313,8 +313,7 @@ slub_check(void) {
 
 通过这些断言与打印输出，可确认内存分配与释放的逻辑完整性。实验中得到的输出：
 
-![image-20251017162302140](C:\Users\xiexi\AppData\Roaming\Typora\typora-user-images\image-20251017162302140.png)
-
+![slub_pmm_test](image2.png)
 ```
 ========== SLUB Allocator Check PASSED ==========
 check_alloc_page() succeeded!
@@ -435,3 +434,4 @@ for (addr = 0x100000; addr < MAX_MEM; addr += PAGE_SIZE) {
 2. **必要时启用主动探测机制**，逐页写读或 DMA 验证；
 3. **结合异常捕获机制**确保系统安全；
 4. **最终在内核页分配初始化（如 `pmm_init`）阶段**形成 `memmap` 表，用于后续物理页管理。
+
