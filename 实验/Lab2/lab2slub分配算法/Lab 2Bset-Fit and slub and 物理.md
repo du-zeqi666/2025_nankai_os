@@ -70,7 +70,7 @@ pmm_manager = &best_fit_pmm_manager;
 
 如同，make grade后成功通过测试：
 
-![image-20251015222843610](C:\Users\xiexi\AppData\Roaming\Typora\typora-user-images\image-20251015222843610.png)
+![best fit pmm test](image1.png)
 
 ### 进一步的改进空间
 
@@ -265,7 +265,7 @@ static void slub_check(void) {
 
 测试结果如图：
 
-![image-20251018193007339](C:\Users\xiexi\AppData\Roaming\Typora\typora-user-images\image-20251018193007339.png)
+![best fit pmm test](image2.png)
 
 说明成功通过测试。
 
@@ -389,3 +389,4 @@ for (addr = 0x100000; addr < MAX_MEM; addr += PAGE_SIZE) {
 2. **必要时启用主动探测机制**，逐页写读或 DMA 验证；
 3. **结合异常捕获机制**确保系统安全；
 4. **最终在内核页分配初始化（如 `pmm_init`）阶段**形成 `memmap` 表，用于后续物理页管理。
+
