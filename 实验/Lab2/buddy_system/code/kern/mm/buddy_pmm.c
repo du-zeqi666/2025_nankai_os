@@ -190,7 +190,7 @@ static void buddy_show(void) {
     cprintf("Total Free Pages: %u\n", buddy_nr_free);
     
     int i;
-    for (i = 0; i < MAX_ORDER; i++) {
+    for (i = 0; i <= MAX_ORDER; i++) {
         if (!list_empty(&(buddy_free_area[i].free_list))) {
             cprintf("  阶数 %d(%u 页): 空闲 %u 块, 总空闲 %u 页. 内存块起始PPN:\n", 
                     i, 1 << i, buddy_free_area[i].nr_free / (1 << i), buddy_free_area[i].nr_free);
@@ -306,4 +306,5 @@ const struct pmm_manager buddy_pmm_manager = {
     .free_pages = buddy_free_pages,
     .nr_free_pages = buddy_nr_free_pages,
     .check = buddy_check
+
 };
