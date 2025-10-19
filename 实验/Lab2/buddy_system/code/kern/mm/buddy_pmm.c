@@ -5,10 +5,10 @@
 #include <buddy_pmm.h>
 #include <stdio.h>
 
-#define MAX_ORDER 15
+#define MAX_ORDER 14
 
 typedef struct {
-    free_area_t free_area[MAX_ORDER+1];  // 0 到 MAX_ORDER-1 阶的空闲链表; free_area_t定义在memlayout.h
+    free_area_t free_area[MAX_ORDER+1];  // 0 到 MAX_ORDER 阶的空闲链表; free_area_t定义在memlayout.h
     unsigned int nr_free;              // 总空闲页数
 } buddy_area_t;
 
@@ -308,3 +308,4 @@ const struct pmm_manager buddy_pmm_manager = {
     .check = buddy_check
 
 };
+
