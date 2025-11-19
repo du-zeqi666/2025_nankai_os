@@ -647,3 +647,84 @@ Sv39 采用 9-9-9-12 的地址划分，每一级都是9位索引
 - 目前get_pte()函数将页表项的查找和页表项的分配合并在一个函数里，你认为这种写法好吗？有没有必要把两个功能拆开？
 
 这个我觉得不好说，分开呢，纯查找逻辑可在多个场景使用，我们可以自定义页表项分配与测试查找。但是一般这些操作我们没必要去干，合并后查找分配一起完成，避免可能重复调用遍历页表项的情况，集中处理错误，我觉得就目前而言没啥必要拆开吧
+
+### 补充修改：
+
+框架的一些问题
+
+#### 类型不匹配
+
+```cmd
+kern/mm/kmalloc.c: In function '__slob_free_pages':
+kern/mm/kmalloc.c:92:22: warning: passing argument 1 of 'kva2page' makes pointer from integer without a cast [-Wint-conversion]
+   92 |  free_pages(kva2page(kva), 1 << order);
+      |                      ^~~
+      |                      |
+      |                      long unsigned int
+In file included from kern/mm/kmalloc.c:7:
+kern/mm/pmm.h:117:16: note: expected 'void *' but argument is of type 'long unsigned int'
+  117 | kva2page(void *kva)
+      |          ~~~~~~^~~
+```
+
+labcode/lab4/kern/mm/kmalloc.c添加显式类型转换
+
+```c
+// static inline void __slob_free_pages(unsigned long kva, int order)
+// {
+// 	free_pages(kva2page(kva), 1 << order);
+// }
+
+static inline void __slob_free_pages(unsigned long kva, int order)
+{
+    free_pages(kva2page((void *)kva), 1 << order);
+}
+```
+
+#### 警告打印输出（可以不改）
+
+```
+riscv64-unknown-elf-ld: removing unused section '.rodata.__warn.str1.8' in file 'obj/kern/debug/panic.o'
+riscv64-unknown-elf-ld: removing unused section '.text.__warn' in file 'obj/kern/debug/panic.o'
+riscv64-unknown-elf-ld: removing unused section '.text.is_kernel_panic' in file 'obj/kern/debug/panic.o'
+riscv64-unknown-elf-ld: removing unused section '.text.kbd_intr' in file 'obj/kern/driver/console.o'
+riscv64-unknown-elf-ld: removing unused section '.text.serial_intr' in file 'obj/kern/driver/console.o'
+riscv64-unknown-elf-ld: removing unused section '.text.pic_enable' in file 'obj/kern/driver/picirq.o'
+riscv64-unknown-elf-ld: removing unused section '.text.slob_init' in file 'obj/kern/mm/kmalloc.o'
+riscv64-unknown-elf-ld: removing unused section '.text.slob_allocated' in file 'obj/kern/mm/kmalloc.o'
+riscv64-unknown-elf-ld: removing unused section '.text.kallocated' in file 'obj/kern/mm/kmalloc.o'
+riscv64-unknown-elf-ld: removing unused section '.text.ksize' in file 'obj/kern/mm/kmalloc.o'
+riscv64-unknown-elf-ld: removing unused section '.text.tlb_invalidate' in file 'obj/kern/mm/pmm.o'
+riscv64-unknown-elf-ld: removing unused section '.rodata.print_vma.str1.8' in file 'obj/kern/mm/vmm.o'
+riscv64-unknown-elf-ld: removing unused section '.text.print_vma' in file 'obj/kern/mm/vmm.o'
+riscv64-unknown-elf-ld: removing unused section '.rodata.print_mm.str1.8' in file 'obj/kern/mm/vmm.o'
+riscv64-unknown-elf-ld: removing unused section '.text.print_mm' in file 'obj/kern/mm/vmm.o'
+riscv64-unknown-elf-ld: removing unused section '.text.mm_create' in file 'obj/kern/mm/vmm.o'
+riscv64-unknown-elf-ld: removing unused section '.text.vma_create' in file 'obj/kern/mm/vmm.o'
+riscv64-unknown-elf-ld: removing unused section '.text.mm_destroy' in file 'obj/kern/mm/vmm.o'
+riscv64-unknown-elf-ld: removing unused section '.text.set_proc_name' in file 'obj/kern/process/proc.o'
+riscv64-unknown-elf-ld: removing unused section '.text.get_proc_name' in file 'obj/kern/process/proc.o'
+riscv64-unknown-elf-ld: removing unused section '.text.find_proc' in file 'obj/kern/process/proc.o'
+riscv64-unknown-elf-ld: removing unused section '.text.sprintputch' in file 'obj/libs/printfmt.o'
+riscv64-unknown-elf-ld: removing unused section '.text.snprintf' in file 'obj/libs/printfmt.o'
+riscv64-unknown-elf-ld: removing unused section '.text.vsnprintf' in file 'obj/libs/printfmt.o'
+riscv64-unknown-elf-ld: removing unused section '.text.strncpy' in file 'obj/libs/string.o'
+riscv64-unknown-elf-ld: removing unused section '.text.strfind' in file 'obj/libs/string.o'
+riscv64-unknown-elf-ld: removing unused section '.text.strtol' in file 'obj/libs/string.o'
+riscv64-unknown-elf-ld: removing unused section '.text.memmove' in file 'obj/libs/string.o'
+riscv64-unknown-elf-objcopy bin/kernel --strip-all -O binary bin/ucore.img
+```
+
+labcode/lab4/Makefile
+
+```
+LDFLAGS	+= -nostdlib --gc-sections --print-gc-sections
+```
+
+改为
+
+```
+LDFLAGS	+= -nostdlib --gc-sections
+```
+
+![](pic/屏幕截图 2025-11-19 185639.png)
